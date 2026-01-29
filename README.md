@@ -1,82 +1,72 @@
-# Video Transcription Tool v2.0
+# Phoenix Whisper 🎙️✨
 
-Professional, resumable, and concurrent video transcription application.
+**A professional, resumable, and self-deploying transcription tool powered by OpenAI's Whisper. Designed for long-form videos, it offers a truly "zero-setup" experience and adaptive performance.**
 
-## Features
+![Screenshot of the tool in action](URL_TO_YOUR_SCREENSHOT.png)  <!-- ضع هنا رابط لصورة الأداة وهي تعمل -->
 
-- 🚀 **Concurrent Processing** - Process multiple chunks in parallel
-- 💾 **Stop/Resume** - Checkpoint progress and resume interrupted jobs  
-- 📊 **RAM Profiles** - Dynamic chunk sizing (low/medium/high)
-- 🎨 **Rich UI** - Beautiful progress bars and color-coded output
-- 🛡️ **Graceful Exit** - Safe shutdown on Ctrl+C
+---
 
-## Prerequisites
+This isn't just another script for Whisper. It's a complete, battle-tested application built to handle the real-world challenges of transcribing very long audio and video files reliably. It was born out of the frustration of dealing with crashes, complex setups, and lost progress.
 
-1. **Python 3.10+** in a virtual environment
-2. **FFmpeg** installed and in PATH
-3. **openai-whisper** and **rich** packages
+## 🔥 Key Features
 
-## Installation
+*   🚀 **Zero-Setup Experience (The Phoenix Engine)**
+    *   **Self-Installing:** On its first run, the tool automatically creates its own virtual environment and installs all necessary dependencies. No manual `pip install` needed!
+    *   **Pre-Flight Checks:** Before starting, it validates your system (FFmpeg, Git, Internet, Disk Space) to prevent common errors.
 
-```bash
-# Create virtual environment
-python -m venv venv
-venv\Scripts\activate  # Windows
-# source venv/bin/activate  # Linux/macOS
+*   🛡️ **Ultimate Reliability (Never Lose Your Work)**
+    *   **Resumable Progress:** Stop the transcription at any time (`Ctrl+C`). When you run it again, it picks up exactly where it left off. Perfect for 3+ hour videos.
+    *   **Smart Error Handling:** Automatically handles transcription timeouts and other common issues without crashing.
 
-# Install dependencies
-pip install -r requirements.txt
-```
+*   ⚡ **Adaptive Performance**
+    *   **Hardware-Aware:** Intelligently detects your hardware (CPU cores, GPU availability) to configure the optimal number of parallel workers.
+    *   **Dynamic Chunking:** Adjusts video chunk size based on your system's resources to balance speed and memory usage.
 
-## Usage
+*   ✨ **Superior User Experience**
+    *   **Rich CLI Interface:** A beautiful and informative command-line interface powered by `rich` that keeps you updated on the progress.
+    *   **Unified Live Subtitles:** Always maintains a single, clean, and sorted partial subtitle file (`_IN_PROGRESS.srt`) that you can preview at any time.
 
-This project supports multiple ways to run the application:
+## 🏁 Quick Start
 
-### Recommended
-```bash
-# Auto-setup and run (includes file browser)
-python run.py
-```
+Getting started is as simple as it gets.
 
-### Standard CLI
-```bash
-# Basic usage
-python main.py video.mp4
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/YOUR_USERNAME/phoenix-whisper.git
+    cd phoenix-whisper
+    ```
 
-# With options
-python main.py video.mp4 --model medium --num-workers 4
+2.  **Run the application:**
+    ```bash
+    python run.py
+    ```
 
-# Run as module
-python -m transcription_project.cli video.mp4
-```
+That's it! On the first run, the script will set up its own environment. Subsequent runs will start the application instantly.
 
-### Options
+## 🔧 For Developers (Optional )
 
-| Option | Description |
-|--------|-------------|
-| `--model` | Whisper model (tiny/base/small/medium/large) |
-| `--language` | Source language code (auto-detected if not set) |
-| `--num-workers` | Concurrent workers (default: 1) |
-| `--ram-profile` | low/medium/high chunk sizes |
-| `--resume` | Resume from checkpoint |
-| `--output-dir` | Output directory |
-| `--keep-temp` | Keep temporary files |
-| `--verbose` | Verbose output |
+If you wish to contribute to the project, you can set up the development environment.
 
-## Project Structure
+1.  **Create and activate the virtual environment manually:**
+    ```bash
+    python -m venv venv
+    source venv/bin/activate  # On Windows: venv\Scripts\activate
+    ```
 
-Refactored to `src` layout for better organization:
+2.  **Install development dependencies:**
+    ```bash
+    pip install -r requirements-dev.txt
+    ```
 
-```
-├── run.py                 # Smart launcher (root entry point)
-├── main.py                # Shim for backward compatibility
-├── cli.py                 # Shim for backward compatibility
-├── setup.bat              # Windows setup script
-├── transcribe.bat         # Drag-and-drop script
-└── src/
-    └── transcription_project/
-        ├── main.py        # Core application logic
-        ├── config.py      # Configuration
-        ├── cli.py         # Argument parsing
-        └── ...            # Other modules
-```
+3.  **Run tests:**
+    ```bash
+    pytest
+    ```
+
+## 📄 License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+---
+
+Made with ❤️ and a lot of trial and error.
