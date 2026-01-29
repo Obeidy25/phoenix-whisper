@@ -1,0 +1,14 @@
+# Video Transcription Tool v2.0 - Requirements
+# ==============================================
+# Install with: pip install -r requirements.txt
+
+# Core transcription engine
+openai-whisper
+
+# Rich console interface
+rich
+
+# Note: ffmpeg must be installed at the system level
+# Windows: Download from https://ffmpeg.org/download.html
+# Linux: sudo apt install ffmpeg
+# macOS: brew install ffmpeg
