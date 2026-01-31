@@ -205,6 +205,7 @@ class HardwareInfo:
     cpu_cores: int
     has_nvidia_gpu: bool
     description: str
+    gpu_reason: str = ""  # Detailed reason for GPU availability status
 
 
 def get_hardware_info() -> HardwareInfo:
@@ -212,7 +213,7 @@ def get_hardware_info() -> HardwareInfo:
     Detect system hardware capabilities (CPU/GPU).
     
     Returns:
-        HardwareInfo object with detected capabilities
+        HardwareInfo object with detected capabilities and diagnostics
     """
     import os
     import importlib.util
@@ -220,32 +221,72 @@ def get_hardware_info() -> HardwareInfo:
     # Check CPU
     cpu_cores = os.cpu_count() or 4
     
-    # Check GPU (requires torch)
+    # Check GPU with detailed diagnostics
     has_gpu = False
+    gpu_reason = ""
+    gpu_name = None
     
-    # Fast check if torch is installed without importing everything
-    if importlib.util.find_spec("torch"):
+    # Step 1: Check if PyTorch is installed
+    torch_spec = importlib.util.find_spec("torch")
+    if torch_spec is None:
+        gpu_reason = "PyTorch not installed (pip install torch)"
+    else:
         try:
             import torch
-            has_gpu = torch.cuda.is_available()
-        except ImportError:
-            pass
             
-    desc = []
-    desc.append(f"CPU: {cpu_cores} cores")
-    if has_gpu:
-        try:
-            gpu_name = torch.cuda.get_device_name(0)
-            desc.append(f"GPU: {gpu_name}")
-        except:
-            desc.append("GPU: NVIDIA (Unknown)")
+            # Step 2: Check if CUDA is available
+            if not torch.cuda.is_available():
+                # Provide detailed reason why CUDA is unavailable
+                cuda_build = getattr(torch.version, 'cuda', None)
+                if cuda_build is None:
+                    gpu_reason = "PyTorch installed without CUDA support (reinstall with CUDA)"
+                else:
+                    # CUDA was compiled in but runtime failed
+                    gpu_reason = f"CUDA runtime unavailable (PyTorch built for CUDA {cuda_build})"
+                    
+                    # Additional check: try to detect NVIDIA driver
+                    try:
+                        import subprocess
+                        result = subprocess.run(
+                            ["nvidia-smi", "--query-gpu=driver_version", "--format=csv,noheader"],
+                            capture_output=True, text=True, timeout=5
+                        )
+                        if result.returncode != 0:
+                            gpu_reason = "No NVIDIA driver detected (install or update GPU drivers)"
+                    except (FileNotFoundError, subprocess.TimeoutExpired):
+                        gpu_reason = "nvidia-smi not found (no NVIDIA driver installed)"
+                    except Exception:
+                        pass  # Keep original cuda reason
+            else:
+                # GPU is available!
+                has_gpu = True
+                try:
+                    gpu_name = torch.cuda.get_device_name(0)
+                    vram_bytes = torch.cuda.get_device_properties(0).total_memory
+                    vram_gb = vram_bytes / (1024 ** 3)
+                    gpu_reason = f"{gpu_name} ({vram_gb:.1f} GB VRAM)"
+                except Exception:
+                    gpu_reason = "NVIDIA GPU detected"
+                    
+        except ImportError as e:
+            gpu_reason = f"PyTorch import failed: {e}"
+        except Exception as e:
+            gpu_reason = f"GPU detection error: {e}"
+    
+    # Build description string
+    desc = [f"CPU: {cpu_cores} cores"]
+    if has_gpu and gpu_name:
+        desc.append(f"GPU: {gpu_name}")
+    elif has_gpu:
+        desc.append("GPU: NVIDIA")
     else:
-        desc.append("GPU: None")
+        desc.append("GPU: None (CPU mode)")
         
     return HardwareInfo(
         cpu_cores=cpu_cores,
         has_nvidia_gpu=has_gpu,
-        description=", ".join(desc)
+        description=", ".join(desc),
+        gpu_reason=gpu_reason
     )
 
 
@@ -270,6 +311,8 @@ def check_environment() -> Tuple[bool, str]:
         
         msg = "All dependencies found:\n" + "\n".join(versions)
         msg += f"\n\nSystem Hardware:\n  ℹ {hw.description}"
+        if hw.gpu_reason:
+            msg += f"\n  ℹ GPU Status: {hw.gpu_reason}"
         return True, msg
     else:
         errors = []

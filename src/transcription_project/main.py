@@ -258,6 +258,8 @@ class TranscriptionApp:
         # ----------------------------------------------------------------------
         hw_info = get_hardware_info()
         self.ui.log_info(f"Hardware Detected: {hw_info.description}")
+        if not hw_info.has_nvidia_gpu and hw_info.gpu_reason:
+            self.ui.log_warning(f"GPU Status: {hw_info.gpu_reason}")
         
         # 1. Configure Workers
         if args.num_workers is None:
