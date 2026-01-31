@@ -1,7 +1,9 @@
 # Phoenix Whisper 🎙️✨
 
 **A professional, resumable, and self-deploying transcription tool powered by OpenAI's Whisper. Designed for long-form videos, it offers a truly "zero-setup" experience and adaptive performance.**
-<img width="1184" height="790" alt="Screenshot 2026-01-29 032840" src="https://github.com/user-attachments/assets/e05c376b-7a26-4ffc-9b05-2be5a765387a" />
+
+<img width="1249" height="767" alt="Screenshot 2026-01-31 223414" src="https://github.com/user-attachments/assets/7f8296ab-89ed-4603-8711-baa177b479d5" />
+
 
 
 ---
